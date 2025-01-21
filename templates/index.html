@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Stock Market Prediction</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Market Prediction</h1>
+        <form action="/predict" method="post">
+            <label for="company">Select or Type a Company:</label>
+            <input type="text" id="company" name="company" placeholder="Enter company name..." required autocomplete="off">
+            <ul id="suggestions" class="suggestions-list"></ul>
+            <button type="submit">Get Prediction</button>
+        </form>
+    </div>
+
+    <script>
+        const input = document.getElementById('company');
+        const suggestionsList = document.getElementById('suggestions');
+
+        input.addEventListener('input', function() {
+            const query = input.value;
+            if (query.length > 0) {
+                fetch(`/autocomplete?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsList.innerHTML = '';
+                        data.forEach(company => {
+                            const li = document.createElement('li');
+                            li.textContent = company;
+                            li.onclick = function() {
+                                input.value = company;
+                                suggestionsList.innerHTML = '';
+                            };
+                            suggestionsList.appendChild(li);
+                        });
+                    });
+            } else {
+                suggestionsList.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>
